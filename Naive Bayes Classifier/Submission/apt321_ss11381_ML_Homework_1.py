@@ -195,3 +195,50 @@ zero_r_accuracy = c_label/total_test_labels
 print ("\nZero-R Classifier Accuracy = ",zero_r_accuracy )
 
 # The accuracy of Zero-R Classifier is ~59% which is low as compared to performance of Naive-Bayes Classifier.
+
+# Loading Comma Seperated Data using read_table pandas function in 'spam_train' dataframe
+spam_train = pd.read_table("spambasetrain.csv", sep=",", header=None)
+
+# Adding Headers to Data
+spam_train.columns = ["char_freq_;", "char_freq_(", "char_freq_[", "char_freq_!", "char_freq_$", "char_freq_#", "capital_run_length_average", "capital_run_length_longest", "capital_run_length_total", "spam_label"]
+del spam_train["spam_label"]
+print("\nShapiro-Wilk Test:")
+# Shapiro-Wilk Test
+from numpy.random import seed
+from numpy.random import randn
+from scipy.stats import shapiro
+
+# normality test
+def shapiro_normal_test(x):
+    stat, p = shapiro(x)
+    print('Statistics=%.3f, p=%.3f' % (stat, p))
+    # interpret
+    alpha = 0.05
+    if p > alpha:
+        print('Sample looks Gaussian (fail to reject H0)')
+    else:
+        print('Sample does not look Gaussian (reject H0)')
+
+for column in spam_train:
+    shapiro_normal_test(spam_train[column])
+
+print("\nD'Agostino and Pearson's Test:")    
+# D'Agostino and Pearson's Test
+from numpy.random import seed
+from numpy.random import randn
+from scipy.stats import normaltest
+
+# generate univariate observations
+def pearson_normal_test(x):
+    # normality test
+    stat, p = normaltest(x)
+    print('Statistics=%.3f, p=%.3f' % (stat, p))
+    # interpret
+    alpha = 0.05
+    if p > alpha:
+        print('Sample looks Gaussian (fail to reject H0)')
+    else:
+        print('Sample does not look Gaussian (reject H0)')
+
+for column in spam_train:
+    pearson_normal_test(spam_train[column])
