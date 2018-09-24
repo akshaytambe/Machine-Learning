@@ -115,6 +115,14 @@ sheet = workbook.add_sheet("programanswers")
 i = 0
 correct_count =0
 answer_list = []
+
+if prob_not_spam > prob_spam:
+    zero_r_label = 0
+else:
+    zero_r_label = 1
+
+c_label =0 
+
 for index, row in spam_test.iterrows():
       # Taking Natural Log for P(C)
       pr0 =  math.log(prob_not_spam) 
@@ -141,6 +149,9 @@ for index, row in spam_test.iterrows():
       answer_list.append(class_label)
       #print(class_label)
       
+      if (row["spam_label"] == zero_r_label):
+        c_label += 1
+      
       # Comparing results with actual predictions
       if  row["spam_label"] == class_label:
         result= "Match"
@@ -159,7 +170,7 @@ print("\nPredicted Class Labels:")
 answer_list = np.array(answer_list)
 print(answer_list)
 
-print("\nNo. of Correct Predictions : ", correct_count)
+print("\nNo. of Correct Predictions = ", correct_count)
 
 # 5. Which classes were predicted for the first 5 examples in the test set?
 #print(answer_list[0:5])
@@ -170,30 +181,17 @@ print("\nNo. of Correct Predictions : ", correct_count)
 
 # 7. What was the percentage error on the examples in the test file?
 total_test_labels = spam_test['spam_label'].count()
-print("\nNo. of Incorrect Predictions : ", total_test_labels - correct_count)
+print("\nNo. of Incorrect Predictions = ", total_test_labels - correct_count)
 percentage_error = (1 - (correct_count/total_test_labels))*100
 print("\nPrecentage Error = ",percentage_error)
 
 
+# Using Zero-R Classifier Methodology
+
 # 8. Performance Evaluation using Zero-R Classifier
-
-# Loading Comma Seperated Data using read_table pandas function in 'spam_train' dataframe
-spam_train = pd.read_table("spambasetrain.csv", sep=",", header=None)
-X = spam_train
-Y = spam_train[9]
-del X[9]
-X = np.array(X)
-Y = np.array(Y)
-
-# Loading Comma Seperated Data using read_table pandas function in 'spam_test' dataframe
-spam_test = pd.read_table("spambasetest.csv", sep=",", header=None)
-spam_test_labels = spam_test[9]
-del spam_test[9]
-spam_test = np.array(spam_test)
-
-from sklearn.dummy import DummyClassifier
-clf = DummyClassifier(strategy='prior',random_state=0)
-clf.fit(X, Y)
-clf.score(spam_test, spam_test_labels)
+print("\nzero_r_label = ",zero_r_label)
+print("\nMaximized Class Correct Predictions = ",c_label)
+zero_r_accuracy = c_label/total_test_labels
+print ("\nZero-R Classifier Accuracy = ",zero_r_accuracy )
 
 # The accuracy of Zero-R Classifier is ~59% which is low as compared to performance of Naive-Bayes Classifier.
